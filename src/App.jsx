@@ -12,11 +12,13 @@ import PPDBPage from './pages/PPDBPage';
 import BeritaPage from './pages/BeritaPage';
 import GaleriPage from './pages/GaleriPage';
 import RuangBacaPage from './pages/RuangBacaPage';
+import CekStatus from './pages/CekStatus';
 import AdminLayout from './admin/AdminLayout';
 import Dashboard from './admin/Dashboard';
 import BeritaManager from './admin/BeritaManager';
 import GaleriManager from './admin/GaleriManager';
 import PPDBManager from './admin/PPDBManager';
+import BukuManager from './admin/BukuManager';
 
 function HomePage() {
   return (
@@ -38,6 +40,7 @@ function PublicLayout({ onLoginClick }) {
         <Route path="/berita" element={<BeritaPage />} />
         <Route path="/galeri" element={<GaleriPage />} />
         <Route path="/ruang-baca" element={<RuangBacaPage />} />
+        <Route path="/cek-status" element={<CekStatus />} />
       </Routes>
       <Footer />
     </>
@@ -64,6 +67,7 @@ function App() {
             <Route path="berita" element={<BeritaManager />} />
             <Route path="galeri" element={<GaleriManager />} />
             <Route path="ppdb" element={<PPDBManager />} />
+            <Route path="buku" element={<BukuManager />} />
           </Route>
 
           {/* Public routes */}

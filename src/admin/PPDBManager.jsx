@@ -73,7 +73,8 @@ const PPDBManager = () => {
                         <tr>
                             <th>Nama Lengkap</th>
                             <th>Asal Sekolah</th>
-                            <th>Jurusan</th>
+                            <th>Kode Unik</th>
+                            <th>Nominal</th>
                             <th>No. HP</th>
                             <th>Tgl Daftar</th>
                             <th>Status</th>
@@ -82,15 +83,16 @@ const PPDBManager = () => {
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-400)' }}>Memuat...</td></tr>
+                            <tr><td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-400)' }}>Memuat...</td></tr>
                         ) : registrants.length === 0 ? (
-                            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-400)' }}>Belum ada pendaftar. Calon siswa dapat mendaftar melalui halaman PPDB.</td></tr>
+                            <tr><td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-400)' }}>Belum ada pendaftar. Calon siswa dapat mendaftar melalui halaman PPDB.</td></tr>
                         ) : (
                             registrants.map(r => (
                                 <tr key={r.id}>
                                     <td style={{ fontWeight: 500, color: 'var(--gray-700)' }}>{r.nama_lengkap}</td>
                                     <td>{r.asal_sekolah}</td>
-                                    <td>{r.jurusan}</td>
+                                    <td style={{ fontWeight: 700, color: 'var(--sage-700)', fontFamily: 'var(--font-heading)', letterSpacing: '1px' }}>{r.kode_unik ? String(r.kode_unik).padStart(3, '0') : '-'}</td>
+                                    <td style={{ fontWeight: 600 }}>{r.nominal_pembayaran ? `Rp ${Number(r.nominal_pembayaran).toLocaleString('id-ID')}` : '-'}</td>
                                     <td>{r.no_hp}</td>
                                     <td>{r.date_created ? new Date(r.date_created).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}</td>
                                     <td>
@@ -148,6 +150,16 @@ const PPDBManager = () => {
                             <div style={{ marginTop: '1rem' }}>
                                 <p style={{ fontSize: '0.78rem', color: 'var(--gray-400)', marginBottom: '2px' }}>Alamat</p>
                                 <p style={{ fontSize: '0.9rem', color: 'var(--gray-700)' }}>{detailModal.alamat}</p>
+                            </div>
+                            <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', padding: '1rem', background: 'linear-gradient(135deg, var(--sage-50), var(--emerald-50))', borderRadius: '10px', border: '1px solid var(--sage-200)' }}>
+                                <div>
+                                    <p style={{ fontSize: '0.78rem', color: 'var(--gray-400)', marginBottom: '4px' }}>Kode Unik</p>
+                                    <p style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--sage-700)', fontFamily: 'var(--font-heading)', letterSpacing: '2px' }}>{detailModal.kode_unik ? String(detailModal.kode_unik).padStart(3, '0') : '-'}</p>
+                                </div>
+                                <div>
+                                    <p style={{ fontSize: '0.78rem', color: 'var(--gray-400)', marginBottom: '4px' }}>Nominal Pembayaran</p>
+                                    <p style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--emerald-700)', fontFamily: 'var(--font-heading)' }}>{detailModal.nominal_pembayaran ? `Rp ${Number(detailModal.nominal_pembayaran).toLocaleString('id-ID')}` : '-'}</p>
+                                </div>
                             </div>
                             <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--gray-50)', borderRadius: '10px' }}>
                                 <p style={{ fontSize: '0.78rem', color: 'var(--gray-400)', marginBottom: '4px' }}>Status Pembayaran</p>

@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { FiGrid, FiFileText, FiImage, FiUsers, FiLogOut } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiImage, FiUsers, FiLogOut, FiBook } from 'react-icons/fi';
 import { GiMoon } from 'react-icons/gi';
 import { useAuth } from '../context/AuthContext';
 import './AdminLayout.css';
@@ -30,6 +30,7 @@ const AdminLayout = () => {
                     <NavLink to="/admin/berita"><FiFileText /> Kelola Berita</NavLink>
                     <NavLink to="/admin/galeri"><FiImage /> Kelola Galeri</NavLink>
                     <NavLink to="/admin/ppdb"><FiUsers /> Kelola PPDB</NavLink>
+                    <NavLink to="/admin/buku"><FiBook /> Kelola Buku</NavLink>
 
                     <div className="admin-nav-section" style={{ marginTop: 'auto' }}>Akun</div>
                     <button onClick={handleLogout}><FiLogOut /> Keluar</button>
@@ -40,7 +41,7 @@ const AdminLayout = () => {
                 <header className="admin-header">
                     <h2>Admin Panel</h2>
                     <div className="admin-header-user">
-                        <span>{user?.name || 'Admin'}</span>
+                        <span>{user?.first_name || user?.email || 'Admin'}</span>
                         <div className="admin-header-avatar">
                             {(user?.name || 'A').charAt(0)}
                         </div>

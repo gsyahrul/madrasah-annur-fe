@@ -1,5 +1,6 @@
 // =============================================================
 // Directus API Helper — Madrasah Aliyah Annur
+// Uses custom endpoint extension at /madrasah-api/*
 // =============================================================
 
 const DIRECTUS_URL = 'http://localhost:8055';
@@ -44,7 +45,7 @@ async function directusFetch(path, options = {}) {
     return res.json();
 }
 
-// --------------- Auth ---------------
+// --------------- Auth (uses built-in Directus endpoints) ---------------
 
 export async function loginDirectus(email, password) {
     const res = await directusFetch('/auth/login', {
@@ -86,29 +87,27 @@ export async function getCurrentUser() {
     return res.data;
 }
 
-// --------------- Assets ---------------
+// --------------- Assets (uses built-in Directus endpoint) ---------------
 
 export function getAssetUrl(fileId) {
     if (!fileId) return '';
     return `${DIRECTUS_URL}/assets/${fileId}`;
 }
 
-// --------------- Berita (News) ---------------
+// --------------- Berita (News) — Custom Endpoint ---------------
 
 export async function fetchBerita() {
-    const res = await directusFetch(
-        '/items/berita?filter[status][_eq]=published&sort=-date_published&fields=*,image'
-    );
+    const res = await directusFetch('/madrasah-api/berita');
     return res.data;
 }
 
 export async function fetchAllBerita() {
-    const res = await directusFetch('/items/berita?sort=-date_published&fields=*,image');
+    const res = await directusFetch('/madrasah-api/berita/all');
     return res.data;
 }
 
 export async function createBerita(data) {
-    const res = await directusFetch('/items/berita', {
+    const res = await directusFetch('/madrasah-api/berita', {
         method: 'POST',
         body: JSON.stringify(data),
     });
@@ -116,7 +115,7 @@ export async function createBerita(data) {
 }
 
 export async function updateBerita(id, data) {
-    const res = await directusFetch(`/items/berita/${id}`, {
+    const res = await directusFetch(`/madrasah-api/berita/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
     });
@@ -124,28 +123,26 @@ export async function updateBerita(id, data) {
 }
 
 export async function deleteBerita(id) {
-    await fetch(`${DIRECTUS_URL}/items/berita/${id}`, {
+    await fetch(`${DIRECTUS_URL}/madrasah-api/berita/${id}`, {
         method: 'DELETE',
         headers: authHeaders(),
     });
 }
 
-// --------------- Galeri (Gallery) ---------------
+// --------------- Galeri (Gallery) — Custom Endpoint ---------------
 
 export async function fetchGaleri() {
-    const res = await directusFetch(
-        '/items/galeri?filter[status][_eq]=published&sort=-date_created&fields=*,image'
-    );
+    const res = await directusFetch('/madrasah-api/galeri');
     return res.data;
 }
 
 export async function fetchAllGaleri() {
-    const res = await directusFetch('/items/galeri?sort=-date_created&fields=*,image');
+    const res = await directusFetch('/madrasah-api/galeri/all');
     return res.data;
 }
 
 export async function createGaleri(data) {
-    const res = await directusFetch('/items/galeri', {
+    const res = await directusFetch('/madrasah-api/galeri', {
         method: 'POST',
         body: JSON.stringify(data),
     });
@@ -153,24 +150,22 @@ export async function createGaleri(data) {
 }
 
 export async function deleteGaleri(id) {
-    await fetch(`${DIRECTUS_URL}/items/galeri/${id}`, {
+    await fetch(`${DIRECTUS_URL}/madrasah-api/galeri/${id}`, {
         method: 'DELETE',
         headers: authHeaders(),
     });
 }
 
-// --------------- PPDB Registrations ---------------
+// --------------- PPDB Registrations — Custom Endpoint ---------------
 
 export async function fetchPPDBRegistrations() {
-    const res = await directusFetch(
-        '/items/ppdb_registrations?sort=-date_created&fields=*'
-    );
+    const res = await directusFetch('/madrasah-api/ppdb');
     return res.data;
 }
 
 export async function createPPDBRegistration(data) {
     // Public — no auth needed
-    const res = await fetch(`${DIRECTUS_URL}/items/ppdb_registrations`, {
+    const res = await fetch(`${DIRECTUS_URL}/madrasah-api/ppdb`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -183,14 +178,67 @@ export async function createPPDBRegistration(data) {
 }
 
 export async function updatePPDBRegistration(id, data) {
-    const res = await directusFetch(`/items/ppdb_registrations/${id}`, {
+    const res = await directusFetch(`/madrasah-api/ppdb/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
     });
     return res.data;
 }
 
-// --------------- File Upload ---------------
+export async function cekStatusPPDB(nisn) {
+    const res = await fetch(`${DIRECTUS_URL}/madrasah-api/ppdb/cek-status/${encodeURIComponent(nisn)}`, {
+        headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.status === 404) {
+        return null; // Not found
+    }
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.errors?.[0]?.message || 'Terjadi kesalahan server');
+    }
+    return (await res.json()).data;
+}
+
+// --------------- Buku (Books / Ruang Baca) — Custom Endpoint ---------------
+
+export async function fetchBuku(category) {
+    let url = '/madrasah-api/buku';
+    if (category) {
+        url += `?category=${category}`;
+    }
+    const res = await directusFetch(url);
+    return res.data;
+}
+
+export async function fetchAllBuku() {
+    const res = await directusFetch('/madrasah-api/buku/all');
+    return res.data;
+}
+
+export async function createBuku(data) {
+    const res = await directusFetch('/madrasah-api/buku', {
+        method: 'POST',
+        body: JSON.stringify(data),
+    });
+    return res.data;
+}
+
+export async function updateBuku(id, data) {
+    const res = await directusFetch(`/madrasah-api/buku/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+    });
+    return res.data;
+}
+
+export async function deleteBuku(id) {
+    await fetch(`${DIRECTUS_URL}/madrasah-api/buku/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders(),
+    });
+}
+
+// --------------- File Upload (uses built-in Directus endpoint) ---------------
 
 export async function uploadFile(file) {
     const formData = new FormData();
@@ -204,21 +252,11 @@ export async function uploadFile(file) {
     return (await res.json()).data;
 }
 
-// --------------- Dashboard Stats ---------------
+// --------------- Dashboard Stats — Custom Endpoint ---------------
 
 export async function fetchDashboardStats() {
-    const [beritaRes, galeriRes, ppdbRes, ppdbPendingRes] = await Promise.all([
-        directusFetch('/items/berita?aggregate[count]=*'),
-        directusFetch('/items/galeri?aggregate[count]=*'),
-        directusFetch('/items/ppdb_registrations?aggregate[count]=*'),
-        directusFetch('/items/ppdb_registrations?aggregate[count]=*&filter[verification_status][_eq]=pending'),
-    ]);
-    return {
-        beritaCount: beritaRes.data[0]?.count ?? 0,
-        galeriCount: galeriRes.data[0]?.count ?? 0,
-        ppdbCount: ppdbRes.data[0]?.count ?? 0,
-        ppdbPendingCount: ppdbPendingRes.data[0]?.count ?? 0,
-    };
+    const res = await directusFetch('/madrasah-api/stats');
+    return res.data;
 }
 
 export { DIRECTUS_URL, getToken, clearToken };
